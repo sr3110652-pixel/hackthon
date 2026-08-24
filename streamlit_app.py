@@ -14,8 +14,8 @@ st.markdown(
     """
     <style>
     @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap');
-    :root { --ink: #17231d; --forest: #174d3c; --mint: #dff3e8; --lime: #b9e769; --coral: #ef8066; --sky: #dcecf2; }
-    .stApp { background: #f7faf7; color: var(--ink); }
+    :root { --ink: #102018; --forest: #0d6745; --mint: #e9f8dc; --lime: #d8f57b; --coral: #ffb19d; --sky: #e3f4f8; }
+    .stApp { background: #fbfef9; color: var(--ink); }
     [data-testid="stHeader"] { background: transparent; }
     .block-container { max-width: 1100px; padding: 3rem 3rem 4rem; }
     h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; color: var(--ink); letter-spacing: 0; }
@@ -33,9 +33,9 @@ st.markdown(
     .result-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: .4rem 0 1rem; }
     .result-heading h2 { margin: 0; font-size: 1.8rem; }
     .status-pill { border-radius: 999px; padding: .45rem .8rem; background: var(--lime); color: #203313; font: 700 .75rem 'DM Sans', sans-serif; text-transform: uppercase; letter-spacing: .08em; }
-    .solution { background: var(--forest); color: white; border-radius: 10px; padding: 1rem 1.1rem; margin: 1.2rem 0 .8rem; }
-    .solution strong { color: var(--lime); display: block; font: 700 .72rem 'DM Sans', sans-serif; letter-spacing: .12em; text-transform: uppercase; margin-bottom: .35rem; }
-    .solution span { font: 500 1rem/1.45 'DM Sans', sans-serif; }
+    .solution { background: var(--mint); color: var(--ink); border: 1px solid #b7d98b; border-radius: 10px; padding: 1.1rem 1.2rem; margin: 1.2rem 0 .8rem; }
+    .solution strong { color: var(--forest); display: block; font: 700 .72rem 'DM Sans', sans-serif; letter-spacing: .12em; text-transform: uppercase; margin-bottom: .35rem; }
+    .solution span { font: 600 1rem/1.45 'DM Sans', sans-serif; }
     .stButton > button { border-radius: 8px; min-height: 3rem; font-family: 'DM Sans', sans-serif; font-weight: 700; }
     div[data-testid="stMetric"] { background: #f3f7f3; border-radius: 8px; padding: .7rem; }
     @media (max-width: 700px) { .block-container { padding: 2rem 1.1rem 3rem; } .brand-note { display: none; } .hero h1 { font-size: 2.7rem; } }
@@ -97,9 +97,9 @@ if uploaded_file is not None:
                 status_label = result["status"].replace("_", " ").title()
                 status_style = ""
                 if result["status"] == "unhealthy":
-                    status_style = ' style="background: #f6c4b7; color: #6f2417;"'
+                    status_style = ' style="background: var(--coral); color: #6f2417;"'
                 elif result["status"] == "mild_health":
-                    status_style = ' style="background: #f7df98; color: #604b0b;"'
+                    status_style = ' style="background: #ffe68f; color: #604b0b;"'
                 st.markdown(
                     f'<div class="result-heading"><h2>{status_label}</h2><div class="status-pill"{status_style}>{result["healthy_points"]}/10 points</div></div>',
                     unsafe_allow_html=True,
