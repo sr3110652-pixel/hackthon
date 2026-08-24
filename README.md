@@ -31,12 +31,19 @@ Example response:
 	"status": "healthy",
 	"confidence": 0.84,
 	"health_score": 84,
+	"healthy_points": 8,
+	"growing_conditions": {"soil_type": "Loamy", "temperature_c": 25, "soil_ph": 6.5, "humidity_percent": 60},
 	"image": {"width": 1280, "height": 720, "format": "JPEG"},
 	"signals": {"green_coverage": 0.91, "damage_coverage": 0.03},
 	"concerns": [],
-	"recommendation": "The crop looks healthy. Continue regular monitoring."
+	"recommendation": "The crop looks healthy. Continue regular monitoring.",
+	"solution": "The crop looks healthy. Continue regular monitoring. Confirm that the loamy soil drains well and matches the crop's needs."
 }
 ```
+
+The Streamlit screen asks the farmer for soil type, temperature, soil pH, and
+humidity. Temperature, pH, and humidity outside the general crop ranges reduce
+healthy points and are included in the solution.
 
 The endpoint accepts common image formats supported by Pillow and rejects files
 larger than 10 MB. This baseline should not be treated as a definitive diagnosis.

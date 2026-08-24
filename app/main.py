@@ -1,7 +1,7 @@
 from io import BytesIO
 from typing import Any
 
-from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from PIL import Image, UnidentifiedImageError
 
 
@@ -14,8 +14,14 @@ app = FastAPI(
 )
 
 
-def analyze_image(image: Image.Image) -> dict[str, Any]:
-    """Estimate crop health from broad color signals in an image."""
+def analyze_image(
+    image: Image.Image,
+    soil_type: str = "Unknown",
+    temperature: float | None = None,
+    soil_ph: float | None = None,
+    humidity: float | None = None,
+) -> dict[str, Any]:
+    """Estimate crop health from image and farmer-provided growing conditions."""
     rgb_image = image.convert("RGB")
     width, height = rgb_image.size
     total_pixels = width * height
@@ -32,7 +38,22 @@ def analyze_image(image: Image.Image) -> dict[str, Any]:
     green_coverage = green_pixels / total_pixels
     damage_coverage = min(damage_pixels / total_pixels, 1.0)
     other_coverage = max(0.0, 1.0 - green_coverage - damage_coverage)
-    healthy_points = round(min(10.0, green_coverage * 10))
+    image_points = round(min(10.0, green_coverage * 10))
+    environmental_concerns = []
+    if temperature is not None and not 15 <= temperature <= 35:
+        environmental_concerns.append("Temperature is outside the general 15-35 C crop range.")
+    if soil_ph is not None and not 5.5 <= soil_ph <= 7.5:
+        environmental_concerns.append("Soil pH is outside the general 5.5-7.5 crop range.")
+    if humidity is not None and not 40 <= humidity <= 80:
+        environmental_concerns.append("Humidity is outside the general 40-80% crop range.")
+
+    healthy_points = max(0, image_points - len(environmental_concerns))
+    growing_conditions = {
+        "soil_type": soil_type,
+        "temperature_c": temperature,
+        "soil_ph": soil_ph,
+        "humidity_percent": humidity,
+    }
 
     if green_coverage < 0.05:
         status = "unhealthy"
@@ -48,6 +69,7 @@ def analyze_image(image: Image.Image) -> dict[str, Any]:
             concerns.append("Large areas show brown or yellow discoloration.")
         elif damage_coverage >= 0.08:
             concerns.append("Some brown or yellow discoloration is visible.")
+        concerns.extend(environmental_concerns)
 
         if healthy_points >= 8:
             status = "healthy"
@@ -59,11 +81,19 @@ def analyze_image(image: Image.Image) -> dict[str, Any]:
             status = "unhealthy"
             recommendation = "Inspect the crop promptly and consult an agronomist if symptoms persist."
 
+    solution = recommendation
+    if environmental_concerns:
+        solution += " " + " ".join(environmental_concerns)
+    if soil_type != "Unknown":
+        solution += f" Confirm that the {soil_type.lower()} soil drains well and matches the crop's needs."
+
     return {
         "status": status,
         "confidence": confidence,
         "health_score": score,
         "healthy_points": healthy_points,
+        "image_points": image_points,
+        "growing_conditions": growing_conditions,
         "image": {"width": width, "height": height, "format": image.format},
         "signals": {
             "green_coverage": round(green_coverage, 3),
@@ -72,6 +102,7 @@ def analyze_image(image: Image.Image) -> dict[str, Any]:
         },
         "concerns": concerns,
         "recommendation": recommendation,
+        "solution": solution,
     }
 
 
@@ -81,7 +112,13 @@ def service_health() -> dict[str, str]:
 
 
 @app.post("/api/crop-health")
-async def crop_health(image: UploadFile = File(...)) -> dict[str, Any]:
+async def crop_health(
+    image: UploadFile = File(...),
+    soil_type: str = Form("Unknown"),
+    temperature: float | None = Form(None),
+    soil_ph: float | None = Form(None),
+    humidity: float | None = Form(None),
+) -> dict[str, Any]:
     if image.content_type and not image.content_type.startswith("image/"):
         raise HTTPException(status_code=415, detail="The uploaded file must be an image.")
 
@@ -96,4 +133,4 @@ async def crop_health(image: UploadFile = File(...)) -> dict[str, Any]:
     except (UnidentifiedImageError, OSError):
         raise HTTPException(status_code=400, detail="The uploaded file is not a valid image.")
 
-    return analyze_image(uploaded_image)
+    return analyze_image(uploaded_image, soil_type, temperature, soil_ph, humidity)
