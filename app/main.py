@@ -65,6 +65,7 @@ def analyze_image(
         "sunlight": sunlight,
         "fertilizer_used": fertilizer_used,
         "symptoms": symptoms,
+        "crop_type_verification": "not_available_with_color_analysis",
     }
 
     if green_coverage < 0.05:

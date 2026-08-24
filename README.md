@@ -48,6 +48,8 @@ healthy points and are included in the solution.
 It also accepts optional crop type, growth stage, watering frequency, sunlight,
 fertilizer use, and visible symptoms. These details are returned with the result
 and used to make the solution more specific without changing the health score.
+The current color-based analyzer cannot identify the crop species from the photo,
+so Streamlit asks the farmer to confirm that the selected crop matches the image.
 
 The endpoint accepts common image formats supported by Pillow and rejects files
 larger than 10 MB. This baseline should not be treated as a definitive diagnosis.

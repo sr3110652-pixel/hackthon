@@ -92,6 +92,10 @@ with detail_columns[2]:
     st.markdown("**Visible symptoms**")
     symptoms = st.text_input("Visible symptoms", placeholder="e.g. yellow spots, curling leaves", label_visibility="collapsed") or "None reported"
 
+crop_confirmed = st.checkbox("I confirm the selected crop type matches the uploaded photo.")
+if not crop_confirmed:
+    st.caption("Crop type is used as context. The current color-based analyzer cannot identify tomato, chili, or other crop species automatically.")
+
 st.markdown('<div class="section-label">02 / Crop photograph</div>', unsafe_allow_html=True)
 
 uploaded_file = st.file_uploader(
@@ -114,7 +118,7 @@ if uploaded_file is not None:
         else:
             st.image(image, caption=uploaded_file.name, width="stretch")
 
-            if st.button("Analyze crop", type="primary", width="stretch"):
+            if st.button("Analyze crop", type="primary", width="stretch", disabled=not crop_confirmed):
                 try:
                     result = analyze_image(
                         image,
