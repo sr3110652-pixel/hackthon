@@ -69,6 +69,29 @@ with condition_columns[3]:
     st.markdown("**Humidity** <span class='input-unit'>(%)</span>", unsafe_allow_html=True)
     humidity = st.number_input("Humidity (%)", min_value=0.0, max_value=100.0, value=60.0, step=1.0, label_visibility="collapsed")
 
+st.markdown('<div class="section-label">01A / Plant details</div>', unsafe_allow_html=True)
+detail_columns = st.columns(3)
+with detail_columns[0]:
+    st.markdown("**Crop type**")
+    crop_type = st.text_input("Crop type", placeholder="e.g. Tomato", label_visibility="collapsed") or "Unknown"
+with detail_columns[1]:
+    st.markdown("**Growth stage**")
+    growth_stage = st.selectbox("Growth stage", ["Unknown", "Seedling", "Vegetative", "Flowering", "Fruiting", "Harvest"], label_visibility="collapsed")
+with detail_columns[2]:
+    st.markdown("**Watering**")
+    watering_frequency = st.selectbox("Watering", ["Unknown", "Daily", "Every 2-3 days", "Weekly", "Rarely"], label_visibility="collapsed")
+
+detail_columns = st.columns(3)
+with detail_columns[0]:
+    st.markdown("**Sunlight**")
+    sunlight = st.selectbox("Sunlight", ["Unknown", "Low", "Partial", "Full sun"], label_visibility="collapsed")
+with detail_columns[1]:
+    st.markdown("**Fertilizer used**")
+    fertilizer_used = st.selectbox("Fertilizer used", ["Unknown", "None", "Organic", "Chemical", "Both"], label_visibility="collapsed")
+with detail_columns[2]:
+    st.markdown("**Visible symptoms**")
+    symptoms = st.text_input("Visible symptoms", placeholder="e.g. yellow spots, curling leaves", label_visibility="collapsed") or "None reported"
+
 st.markdown('<div class="section-label">02 / Crop photograph</div>', unsafe_allow_html=True)
 
 uploaded_file = st.file_uploader(
@@ -93,7 +116,19 @@ if uploaded_file is not None:
 
             if st.button("Analyze crop", type="primary", width="stretch"):
                 try:
-                    result = analyze_image(image, soil_type, temperature, soil_ph, humidity)
+                    result = analyze_image(
+                        image,
+                        soil_type,
+                        temperature,
+                        soil_ph,
+                        humidity,
+                        crop_type,
+                        growth_stage,
+                        watering_frequency,
+                        sunlight,
+                        fertilizer_used,
+                        symptoms,
+                    )
                 except (OSError, ValueError) as error:
                     st.error(f"Could not analyze this image: {error}")
                     st.stop()

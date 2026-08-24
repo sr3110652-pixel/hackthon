@@ -45,6 +45,10 @@ The Streamlit screen asks the farmer for soil type, temperature, soil pH, and
 humidity. Temperature, pH, and humidity outside the general crop ranges reduce
 healthy points and are included in the solution.
 
+It also accepts optional crop type, growth stage, watering frequency, sunlight,
+fertilizer use, and visible symptoms. These details are returned with the result
+and used to make the solution more specific without changing the health score.
+
 The endpoint accepts common image formats supported by Pillow and rejects files
 larger than 10 MB. This baseline should not be treated as a definitive diagnosis.
 

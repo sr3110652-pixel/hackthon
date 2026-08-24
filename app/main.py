@@ -20,6 +20,12 @@ def analyze_image(
     temperature: float | None = None,
     soil_ph: float | None = None,
     humidity: float | None = None,
+    crop_type: str = "Unknown",
+    growth_stage: str = "Unknown",
+    watering_frequency: str = "Unknown",
+    sunlight: str = "Unknown",
+    fertilizer_used: str = "Unknown",
+    symptoms: str = "None reported",
 ) -> dict[str, Any]:
     """Estimate crop health from image and farmer-provided growing conditions."""
     rgb_image = image.convert("RGB")
@@ -53,6 +59,12 @@ def analyze_image(
         "temperature_c": temperature,
         "soil_ph": soil_ph,
         "humidity_percent": humidity,
+        "crop_type": crop_type,
+        "growth_stage": growth_stage,
+        "watering_frequency": watering_frequency,
+        "sunlight": sunlight,
+        "fertilizer_used": fertilizer_used,
+        "symptoms": symptoms,
     }
 
     if green_coverage < 0.05:
@@ -86,6 +98,8 @@ def analyze_image(
         solution += " " + " ".join(environmental_concerns)
     if soil_type != "Unknown":
         solution += f" Confirm that the {soil_type.lower()} soil drains well and matches the crop's needs."
+    if symptoms != "None reported":
+        solution += f" Monitor the reported symptoms: {symptoms}."
 
     return {
         "status": status,
@@ -118,6 +132,12 @@ async def crop_health(
     temperature: float | None = Form(None),
     soil_ph: float | None = Form(None),
     humidity: float | None = Form(None),
+    crop_type: str = Form("Unknown"),
+    growth_stage: str = Form("Unknown"),
+    watering_frequency: str = Form("Unknown"),
+    sunlight: str = Form("Unknown"),
+    fertilizer_used: str = Form("Unknown"),
+    symptoms: str = Form("None reported"),
 ) -> dict[str, Any]:
     if image.content_type and not image.content_type.startswith("image/"):
         raise HTTPException(status_code=415, detail="The uploaded file must be an image.")
@@ -133,4 +153,16 @@ async def crop_health(
     except (UnidentifiedImageError, OSError):
         raise HTTPException(status_code=400, detail="The uploaded file is not a valid image.")
 
-    return analyze_image(uploaded_image, soil_type, temperature, soil_ph, humidity)
+    return analyze_image(
+        uploaded_image,
+        soil_type,
+        temperature,
+        soil_ph,
+        humidity,
+        crop_type,
+        growth_stage,
+        watering_frequency,
+        sunlight,
+        fertilizer_used,
+        symptoms,
+    )
