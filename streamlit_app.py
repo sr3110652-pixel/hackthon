@@ -6,6 +6,8 @@ from PIL import Image, UnidentifiedImageError
 from app.main import analyze_image
 
 
+MAX_IMAGE_BYTES = 10 * 1024 * 1024
+
 st.set_page_config(page_title="Crop Health Check", page_icon="+", layout="centered")
 
 st.title("Crop Health Check")
@@ -24,32 +26,40 @@ uploaded_file = st.file_uploader(
 if uploaded_file is not None:
     file_bytes = uploaded_file.getvalue()
 
-    try:
-        image = Image.open(BytesIO(file_bytes))
-        image.verify()
-        image = Image.open(BytesIO(file_bytes))
-    except (UnidentifiedImageError, OSError):
-        st.error("The uploaded file is not a valid image.")
+    if len(file_bytes) > MAX_IMAGE_BYTES:
+        st.error("Image must be 10 MB or smaller.")
     else:
-        st.image(image, caption=uploaded_file.name, use_container_width=True)
+        try:
+            image = Image.open(BytesIO(file_bytes))
+            image.verify()
+            image = Image.open(BytesIO(file_bytes))
+        except (UnidentifiedImageError, OSError):
+            st.error("The uploaded file is not a valid image.")
+        else:
+            st.image(image, caption=uploaded_file.name, width="stretch")
 
-        if st.button("Analyze crop", type="primary", use_container_width=True):
-            result = analyze_image(image, soil_type, temperature, soil_ph, humidity)
-            st.subheader(result["status"].replace("_", " ").title())
+            if st.button("Analyze crop", type="primary", width="stretch"):
+                try:
+                    result = analyze_image(image, soil_type, temperature, soil_ph, humidity)
+                except (OSError, ValueError) as error:
+                    st.error(f"Could not analyze this image: {error}")
+                    st.stop()
 
-            points_column, score_column, confidence_column = st.columns(3)
-            points_column.metric("Healthy points", f'{result["healthy_points"]}/10')
-            score_column.metric("Health score", f'{result["health_score"]}/100')
-            confidence_column.metric("Confidence", f'{result["confidence"]:.0%}')
-            st.progress(result["health_score"] / 100)
+                st.subheader(result["status"].replace("_", " ").title())
 
-            signal_column, damage_column = st.columns(2)
-            signal_column.metric("Green coverage", f'{result["signals"]["green_coverage"]:.1%}')
-            damage_column.metric("Damage coverage", f'{result["signals"]["damage_coverage"]:.1%}')
+                points_column, score_column, confidence_column = st.columns(3)
+                points_column.metric("Healthy points", f'{result["healthy_points"]}/10')
+                score_column.metric("Health score", f'{result["health_score"]}/100')
+                confidence_column.metric("Confidence", f'{result["confidence"]:.0%}')
+                st.progress(result["health_score"] / 100)
 
-            st.write("**Solution:**", result["solution"])
+                signal_column, damage_column = st.columns(2)
+                signal_column.metric("Green coverage", f'{result["signals"]["green_coverage"]:.1%}')
+                damage_column.metric("Damage coverage", f'{result["signals"]["damage_coverage"]:.1%}')
 
-            if result["concerns"]:
-                for concern in result["concerns"]:
-                    st.warning(concern)
-            st.info(result["recommendation"])
+                st.write("**Solution:**", result["solution"])
+
+                if result["concerns"]:
+                    for concern in result["concerns"]:
+                        st.warning(concern)
+                st.info(result["recommendation"])
