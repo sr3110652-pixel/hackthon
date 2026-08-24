@@ -35,11 +35,11 @@ def analyze_image(image: Image.Image) -> dict[str, Any]:
     healthy_points = round(min(10.0, green_coverage * 10))
 
     if green_coverage < 0.05:
-        status = "insufficient_data"
+        status = "unhealthy"
         score = 0
         confidence = 0.2
-        concerns = ["The image does not contain enough visible vegetation."]
-        recommendation = "Upload a clear photo showing the crop leaves and canopy."
+        concerns = ["The image does not contain enough visible healthy vegetation."]
+        recommendation = "The plant appears unhealthy. Inspect it and check watering, pests, and nutrient levels."
     else:
         score = round(max(0.0, min(100.0, green_coverage * 100 - damage_coverage * 75)))
         confidence = round(min(0.95, max(0.35, green_coverage + damage_coverage)), 2)
@@ -49,12 +49,11 @@ def analyze_image(image: Image.Image) -> dict[str, Any]:
         elif damage_coverage >= 0.08:
             concerns.append("Some brown or yellow discoloration is visible.")
 
-        green_is_dominant = green_coverage > damage_coverage and green_coverage > other_coverage
-        if green_is_dominant:
+        if healthy_points >= 8:
             status = "healthy"
             recommendation = "The crop looks healthy. Continue regular monitoring."
-        elif score >= 40:
-            status = "needs_attention"
+        elif healthy_points >= 6:
+            status = "mild_health"
             recommendation = "Inspect the leaves closely and check watering, pests, and nutrient levels."
         else:
             status = "unhealthy"

@@ -2,8 +2,9 @@
 
 A small backend that accepts a crop photo and returns an estimated health status and healthy points from 0 to 10.
 The current analyzer is a lightweight baseline based on visible green, brown, and
-yellow pixel coverage. It is intended as a working API contract that can later be
-backed by a trained crop-disease model.
+yellow pixel coverage. Healthy points use these thresholds: 8-10 is healthy, 6-7
+is mild health and needs care, and 0-5 is unhealthy. It is intended as a working
+API contract that can later be backed by a trained crop-disease model.
 
 ## Run locally
 
