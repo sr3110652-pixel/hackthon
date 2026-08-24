@@ -14,8 +14,8 @@ st.markdown(
     """
     <style>
     @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap');
-    :root { --ink: #102018; --forest: #0d6745; --mint: #e9f8dc; --lime: #d8f57b; --coral: #ffb19d; --sky: #e3f4f8; }
-    .stApp { background: #fbfef9; color: var(--ink); }
+    :root { --ink: #17251f; --forest: #075c4b; --mint: #e2f7d7; --lime: #e4fa73; --coral: #ffae96; --sky: #dff5f6; --sun: #fff0a8; }
+    .stApp { background: #fffdf4; color: var(--ink); }
     [data-testid="stHeader"] { background: transparent; }
     .block-container { max-width: 1100px; padding: 3rem 3rem 4rem; }
     h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; color: var(--ink); letter-spacing: 0; }
@@ -30,14 +30,18 @@ st.markdown(
     div[data-testid="stFileUploader"] { background: white; border: 1px dashed #7e9b87; border-radius: 12px; padding: .35rem; }
     div[data-testid="stFileUploader"] section { background: var(--mint); border-radius: 8px; }
     div[data-testid="stVerticalBlockBorderWrapper"] { border-color: #d4e1d7; border-radius: 12px; background: white; }
-    .result-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: .4rem 0 1rem; }
-    .result-heading h2 { margin: 0; font-size: 1.8rem; }
-    .status-pill { border-radius: 999px; padding: .45rem .8rem; background: var(--lime); color: #203313; font: 700 .75rem 'DM Sans', sans-serif; text-transform: uppercase; letter-spacing: .08em; }
     .solution { background: var(--mint); color: var(--ink); border: 1px solid #b7d98b; border-radius: 10px; padding: 1.1rem 1.2rem; margin: 1.2rem 0 .8rem; }
     .solution strong { color: var(--forest); display: block; font: 700 .72rem 'DM Sans', sans-serif; letter-spacing: .12em; text-transform: uppercase; margin-bottom: .35rem; }
     .solution span { font: 600 1rem/1.45 'DM Sans', sans-serif; }
     .stButton > button { border-radius: 8px; min-height: 3rem; font-family: 'DM Sans', sans-serif; font-weight: 700; }
-    div[data-testid="stMetric"] { background: #f3f7f3; border-radius: 8px; padding: .7rem; }
+    div[data-testid="stMetric"] { background: #f3f9ed; border: 1px solid #d1e5b4; border-radius: 8px; padding: .7rem; }
+    div[data-testid="stMetricLabel"] { color: #496458; }
+    div[data-testid="stMetricValue"] { color: var(--forest); font-family: 'Space Grotesk', sans-serif; }
+    .health-hero { display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: var(--sun); border: 2px solid #e0c94d; border-radius: 14px; padding: 1.2rem 1.4rem; margin: .6rem 0 1rem; }
+    .health-hero-label { color: #695b0a; font: 700 .75rem 'DM Sans', sans-serif; letter-spacing: .12em; text-transform: uppercase; }
+    .health-hero-status { color: var(--ink); font: 700 1.8rem/1.1 'Space Grotesk', sans-serif; margin-top: .25rem; }
+    .health-points { color: var(--forest); font: 700 2.8rem/.9 'Space Grotesk', sans-serif; white-space: nowrap; }
+    .health-points small { color: #526a5c; font: 700 .75rem 'DM Sans', sans-serif; letter-spacing: .08em; text-transform: uppercase; }
     @media (max-width: 700px) { .block-container { padding: 2rem 1.1rem 3rem; } .brand-note { display: none; } .hero h1 { font-size: 2.7rem; } }
     </style>
     """,
@@ -95,13 +99,8 @@ if uploaded_file is not None:
                     st.stop()
 
                 status_label = result["status"].replace("_", " ").title()
-                status_style = ""
-                if result["status"] == "unhealthy":
-                    status_style = ' style="background: var(--coral); color: #6f2417;"'
-                elif result["status"] == "mild_health":
-                    status_style = ' style="background: #ffe68f; color: #604b0b;"'
                 st.markdown(
-                    f'<div class="result-heading"><h2>{status_label}</h2><div class="status-pill"{status_style}>{result["healthy_points"]}/10 points</div></div>',
+                    f'<div class="health-hero"><div><div class="health-hero-label">Plant health status</div><div class="health-hero-status">{status_label}</div></div><div class="health-points">{result["healthy_points"]}<small> / 10<br>healthy points</small></div></div>',
                     unsafe_allow_html=True,
                 )
 
