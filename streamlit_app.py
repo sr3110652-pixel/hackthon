@@ -23,6 +23,7 @@ st.markdown(
     .brand { display: flex; justify-content: space-between; align-items: end; border-bottom: 1px solid #cbd9cf; padding-bottom: 1.2rem; margin-bottom: 2.2rem; }
     .brand-mark { color: var(--forest); font: 700 1rem 'Space Grotesk', sans-serif; letter-spacing: .08em; text-transform: uppercase; }
     .brand-note { color: #607168; font: 500 .8rem 'DM Sans', sans-serif; text-transform: uppercase; letter-spacing: .08em; }
+    .input-unit { color: #708177; font-weight: 500; }
     .hero h1 { font-size: clamp(2.4rem, 5vw, 4.6rem); line-height: .98; margin: 0; max-width: 700px; }
     .hero p { color: #5d6d64; font-size: 1.05rem; max-width: 570px; margin: 1.1rem 0 2.4rem; }
     .section-label { color: var(--forest); font: 700 .74rem 'DM Sans', sans-serif; letter-spacing: .12em; text-transform: uppercase; margin: .8rem 0 .4rem; }
@@ -51,10 +52,18 @@ st.markdown(
 
 st.markdown('<div class="section-label">01 / Growing conditions</div>', unsafe_allow_html=True)
 condition_columns = st.columns(4)
-soil_type = condition_columns[0].selectbox("Soil type", ["Unknown", "Loamy", "Sandy", "Clay", "Silty", "Peaty"])
-temperature = condition_columns[1].number_input("Temperature (C)", min_value=-20.0, max_value=60.0, value=25.0, step=0.5)
-soil_ph = condition_columns[2].number_input("Soil pH", min_value=0.0, max_value=14.0, value=6.5, step=0.1)
-humidity = condition_columns[3].number_input("Humidity (%)", min_value=0.0, max_value=100.0, value=60.0, step=1.0)
+with condition_columns[0]:
+    st.markdown("**Soil type**")
+    soil_type = st.selectbox("Soil type", ["Unknown", "Loamy", "Sandy", "Clay", "Silty", "Peaty"], label_visibility="collapsed")
+with condition_columns[1]:
+    st.markdown("**Temperature** <span class='input-unit'>(C)</span>", unsafe_allow_html=True)
+    temperature = st.number_input("Temperature (C)", min_value=-20.0, max_value=60.0, value=25.0, step=0.5, label_visibility="collapsed")
+with condition_columns[2]:
+    st.markdown("**Soil pH**")
+    soil_ph = st.number_input("Soil pH", min_value=0.0, max_value=14.0, value=6.5, step=0.1, label_visibility="collapsed")
+with condition_columns[3]:
+    st.markdown("**Humidity** <span class='input-unit'>(%)</span>", unsafe_allow_html=True)
+    humidity = st.number_input("Humidity (%)", min_value=0.0, max_value=100.0, value=60.0, step=1.0, label_visibility="collapsed")
 
 st.markdown('<div class="section-label">02 / Crop photograph</div>', unsafe_allow_html=True)
 
