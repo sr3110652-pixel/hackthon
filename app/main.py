@@ -151,7 +151,7 @@ async def crop_health(
         uploaded_image = Image.open(BytesIO(contents))
         uploaded_image.verify()
         uploaded_image = Image.open(BytesIO(contents))
-    except (UnidentifiedImageError, OSError):
+    except (Image.DecompressionBombError, UnidentifiedImageError, OSError, SyntaxError, ValueError):
         raise HTTPException(status_code=400, detail="The uploaded file is not a valid image.")
 
     return analyze_image(

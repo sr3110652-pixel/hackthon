@@ -113,7 +113,7 @@ if uploaded_file is not None:
             image = Image.open(BytesIO(file_bytes))
             image.verify()
             image = Image.open(BytesIO(file_bytes))
-        except (UnidentifiedImageError, OSError):
+        except (Image.DecompressionBombError, UnidentifiedImageError, OSError, SyntaxError, ValueError):
             st.error("The uploaded file is not a valid image.")
         else:
             st.image(image, caption=uploaded_file.name, width="stretch")
